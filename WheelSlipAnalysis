@@ -1,0 +1,39 @@
+from matplotlib import pyplot as plt
+import pandas as pd
+df=pd.read_csv('can_data (1).csv')
+df=df.drop_duplicates()
+df=df.dropna()
+df.columns=df.columns.str.strip().str.lower()
+for col in df.columns:
+    df[col] = pd.to_numeric(df[col], errors='coerce')
+df["wheel_slip"]=df["driven avg wheel speed"]-df["non-driven avg wheel speed"] 
+avg_slip=df["wheel_slip"].mean() 
+max_slip=df["wheel_slip"].max() 
+print("Average Wheel Slip:", avg_slip) 
+print("Maximum Wheel Slip:", max_slip)
+
+df_plot=df.iloc[::50, :]
+
+#wheel slip vs time
+plt.figure(figsize=(12, 6))
+plt.plot(df_plot["timestamp"], df_plot["wheel_slip"], color='red')
+plt.title('Wheel Slip Over Time')
+plt.xlabel('Timestamp')
+plt.ylabel('Wheel Slip')
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("wheel_slip_over_time.png")
+plt.show()
+
+#Histogram of wheel slip
+plt.figure(figsize=(12, 6))
+plt.hist(df_plot['wheel_slip'].dropna(), bins=20, color='skyblue', edgecolor='black')
+plt.title('Distribution of Wheel Slip')
+plt.xlabel('Wheel Slip')
+plt.ylabel('Frequency')
+plt.grid(axis='y')
+plt.tight_layout()
+plt.savefig("wheel_slip_distribution.png")
+plt.show()
+
+
